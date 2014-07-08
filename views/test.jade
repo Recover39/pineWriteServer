@@ -1,0 +1,43 @@
+//
+   Created by YoungKim on 2014. 7. 8..
+html
+    head
+        meta(http-equiv='Content-Type', content='text/html', charset='UTF-8')
+        title
+            | queue test
+    body
+        input(type='file', id = 'uploadfile', name = 'uploadfile')
+        input(type = 'button', value='upload', onclick='upload()')
+        #post(style = 'margin-bottom : 10px;')
+            form.post(method ='post', role='form', action = '/threads', enctype = 'multipart/form-data')
+                input(type = 'text', name = 'author', placeholder = 'author', style='float:left;')
+                input(type = 'text', name = 'is_public', placeholder = 'public', style='float:left;')
+                input(type = 'text', name = 'content', placeholder = 'content', style='float:left;')
+                input(type = 'file', id = 'photo', style ='float:left;')
+                .form-actions
+                    button#postButton(type='submit') post
+        #postText(style = 'margin-bottom : 10px;')
+            form.postText(method ='post', role='form', action = '/threads')
+                input(type = 'text', name = 'author', placeholder = 'author', style='float:left;')
+                input(type = 'text', name = 'is_public', placeholder = 'public', style='float:left;')
+                input(type = 'text', name = 'content', placeholder = 'content', style='float:left;')
+                .form-actions
+                    button#postTextButton(type='submit') postText
+        #like(style = 'margin-bottom : 10px;')
+            form.like(method ='post', role='form', action = '/threads/1/like')
+                input(type = 'text', name = 'user', placeholder = 'userName', style='float:left;')
+                .form-actions
+                    button#likeButton(type='submit') like
+        #unlike(style = 'margin-bottom : 10px;')
+            form.unlike(method ='post', role='form', action = '/threads/1/unlike')
+                input(type = 'text', name = 'user', placeholder = 'userName', style='float:left;')
+                .form-actions
+                    button#unlikeButton(type='submit') unlike
+        #report(style = 'margin-bottom : 10px;')
+            form.report(method ='post', role='form', action = '/threads/1/report')
+                input(type = 'text', name = 'user', placeholder = 'userName', style='float:left;')
+                .form-actions
+                    button#reportButton(type='submit') report
+    script(src='/javascripts/test.js')
+
+
