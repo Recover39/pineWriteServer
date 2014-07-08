@@ -3,7 +3,7 @@
  */
 
 var upload = function (e) {
-    var client = new XMLHttpRequest();
+    var request = new XMLHttpRequest();
 
     var file = document.getElementById("uploadfile");
 
@@ -12,9 +12,9 @@ var upload = function (e) {
     /* Add the file */
     formData.append("upload", file.files[0]);
 
-    client.open("post", "/threads", true);
-    client.setRequestHeader("Content-Type", "multipart/form-data");
-    client.send(formData);  /* Send to server */
+    request.open("post", "/threads", true);
+    request.setRequestHeader("Content-Type", "multipart/form-data");
+    request.send(formData);  /* Send to server */
 };
 
 var post = function (e) {

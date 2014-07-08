@@ -6,7 +6,8 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     cluster = require('cluster'),
-    threadFunction = require('./worker/thread');
+    threadFunction = require('./worker/thread'),
+    multer = require('multer');
 
 //cluster 모듈 사용을 위한 cpu 갯수 확인
 var numCPUs = require('os').cpus().length;
@@ -33,8 +34,10 @@ if (cluster.isMaster) {
     app.use(express.logger('dev'));
     app.use(express.json());
     app.use(express.urlencoded());
-    app.use(express.bodyParser({ keepExtensions: true, uploadDir: "images" }));
+    app.use(express.bodyParser());
     app.use(express.cookieParser('secretKey'));
+    //image processing
+    app.use(multer({ dest: 'images'}));
     app.use(express.static(path.join(__dirname, 'public')), {maxAge: 30 * 24 * 60 * 60 * 1000});
     app.use(express.methodOverride());
     app.use(express.compress());

@@ -117,14 +117,17 @@ var newCardQuery = function (request, response) {
 exports.postNewCard = function (req, res) {
     var reqContentType = req.get('Content-Type');
 
+    //console.log(req.get('Content-Type'));
+
     if (reqContentType === 'application/json') {
         textOnlyNewCardQuery(req, res);
     }
     else if (/multipart\/form-data;+/.test(reqContentType)) {
-        console.log('hello');
-        console.log(req.body);
-        console.log("file name", req.files.file.name);
-        console.log("file path", req.files.file.path);
+//        console.log('hello');
+//        console.log(req.body);
+        console.log(req.files);
+//        console.log(req.files.file.name);
+//        console.log("file path", req.files.file.path);
 
         newCardQuery(req, res);
     }
