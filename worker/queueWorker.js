@@ -19,7 +19,7 @@ var init = function () {
         });
 
         //upload new card (text only) query
-        connection.queue('newCard_textOnly', {autoDelete: false, durable: true}, function (queue) {
+        connection.queue('queue', {autoDelete: false, durable: true}, function (queue) {
             queue.subscribe({ack: true, prefetchCount: 1}, function (msg) {
                 console.log(msg);
                 console.log("Done");
@@ -28,7 +28,7 @@ var init = function () {
         });
 
         //like query
-        connection.queue('threadLikeQueue', {autoDelete: false, durable: true}, function (queue) {
+        connection.queue('queue', {autoDelete: false, durable: true}, function (queue) {
             queue.subscribe({ack: true, prefetchCount: 1}, function (msg) {
                 console.log(msg);
                 console.log("Done");
@@ -37,7 +37,7 @@ var init = function () {
         });
 
         //unlike query
-        connection.queue('threadUnlikeQueue', {autoDelete: false, durable: true}, function (queue) {
+        connection.queue('queue', {autoDelete: false, durable: true}, function (queue) {
             queue.subscribe({ack: true, prefetchCount: 1}, function (msg) {
                 console.log(msg);
                 console.log("Done");
@@ -46,7 +46,7 @@ var init = function () {
         });
 
         //report query
-        connection.queue('threadReportQueue', {autoDelete: false, durable: true}, function (queue) {
+        connection.queue('queue', {autoDelete: false, durable: true}, function (queue) {
             queue.subscribe({ack: true, prefetchCount: 1}, function (msg) {
                 console.log(msg);
                 console.log("Done");

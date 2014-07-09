@@ -11,9 +11,11 @@ var singleClickQuery = function (action, queueName, request, response) {
         var rabbit = require('amqp');
         var connection = rabbit.createConnection({host: 'localhost'});
 
+        //set queue name, action name (identifier)
         var mQueryAction = String(action),
             mQueueName = String(queueName);
 
+        //data to send
         var message = {
             thread_id: request.params.thread_id,
             user: request.body.user,
@@ -44,12 +46,14 @@ var singleClickQuery = function (action, queueName, request, response) {
 
 //send card info without photo to queue
 var textOnlyNewCardQuery = function (request, response) {
-    //rabbitMQ setting
-    var rabbit = require('amqp');
-    var connection = rabbit.createConnection({host: 'localhost'});
 
-    //is_public 에러 감지
+    //is_public field error detection
     if (request.body.is_public === 'true' || request.body.is_public === 'false') {
+        //rabbitMQ setting
+        var rabbit = require('amqp');
+        var connection = rabbit.createConnection({host: 'localhost'});
+
+        //data to send
         var message = {
             author: request.body.author,
             is_public: request.body.is_public,
@@ -61,9 +65,9 @@ var textOnlyNewCardQuery = function (request, response) {
         //use rabbitMQ
         connection.on('ready', function () {
             //open queue (createQueue)
-            connection.queue('newCard_textOnly', {autoDelete: false, durable: true}, function () {
+            connection.queue('queue', {autoDelete: false, durable: true}, function () {
                 //insert queue
-                connection.publish('newCard_textOnly', message);
+                connection.publish('queue', message);
             });
         });
 
@@ -71,6 +75,7 @@ var textOnlyNewCardQuery = function (request, response) {
         response.contentType('application/json');
         response.send({result: "SUCCESS"});
     }
+    //is_public field data error occurred
     else {
         //fail
         response.contentType('application/json');
@@ -78,7 +83,7 @@ var textOnlyNewCardQuery = function (request, response) {
     }
 };
 
-//send card info with card to queue
+//send card info with card to queue -> not handle this at rabbitmq
 var newCardQuery = function (request, response) {
     //rabbitMQ setting
     var rabbit = require('amqp');
@@ -125,11 +130,10 @@ exports.postNewCard = function (req, res) {
     else if (/multipart\/form-data;+/.test(reqContentType)) {
 //        console.log('hello');
 //        console.log(req.body);
-        console.log(req.files);
+//        console.log(req.files);
 //        console.log(req.files.file.name);
 //        console.log("file path", req.files.file.path);
-
-        newCardQuery(req, res);
+//        newCardQuery(req, res);
     }
     //Content-Type error
     else {
@@ -140,13 +144,13 @@ exports.postNewCard = function (req, res) {
 };
 
 exports.likeCard = function (req, res) {
-    singleClickQuery('like', 'threadLikeQueue', req, res);
+    singleClickQuery('like', 'queue', req, res);
 };
 
 exports.unlikeCard = function (req, res) {
-    singleClickQuery('unlike', 'threadUnlikeQueue', req, res);
+    singleClickQuery('unlike', 'queue', req, res);
 };
 
 exports.reportCard = function (req, res) {
-    singleClickQuery('report', 'threadReportQueue', req, res);
+    singleClickQuery('report', 'queue', req, res);
 };
