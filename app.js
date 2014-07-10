@@ -78,6 +78,6 @@ if (cluster.isMaster) {
     });
 
     //worker 작동 시작
-    worker1();
-    worker2();
+    //worker1();
+    //worker2();
 }

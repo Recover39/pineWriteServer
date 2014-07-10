@@ -10,6 +10,7 @@
     "body-parser": "^1.4.3",
     "csurf": "^1.3.0",
     "express": "3.4.7",
+    "haproxy": "0.0.4",
     "jade": "*",
     "morgan": "^1.1.1",
     "multer": "^0.1.0"
