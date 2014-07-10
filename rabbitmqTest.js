@@ -8,7 +8,8 @@ var count = 1;
 
 connection.on('ready', function () {
     connection.queue('queue', {autoDelete: false, durable: true}, function (queue) {
-        queue.subscribe({ack: true, prefetchCount: 1}, function (mag) {
+        console.log('start gathering');
+        queue.subscribe({ack: true, prefetchCount: 1}, function (msg) {
             console.log(count);
             count++;
             queue.shift();
