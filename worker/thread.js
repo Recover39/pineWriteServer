@@ -1,15 +1,26 @@
 /**
  * Created by YoungKim on 2014. 7. 7..
  */
+var rabbitmq = (function () {
+    //rabbitMQ setting
+    var rabbit = require('amqp');
+    var connection = rabbit.createConnection({host: 'localhost'});
+
+    var getConn = function () {
+        return connection;
+    };
+
+    return {
+        getConn: getConn
+    };
+})();
 
 //send singleClickQuery to queue
 var singleClickQuery = function (action, queueName, request, response) {
     var reqContentType = request.get('Content-Type');
 
     if (reqContentType === 'application/json') {
-        //rabbitMQ setting
-        var rabbit = require('amqp');
-        var connection = rabbit.createConnection({host: 'localhost'});
+        var connection = rabbitmq.getConn();
 
         //set queue name, action name (identifier)
         var mQueryAction = String(action),
@@ -23,18 +34,11 @@ var singleClickQuery = function (action, queueName, request, response) {
             action: mQueryAction
         };
 
-        //use rabbitMQ
-        connection.on('ready', function () {
-            //open queue (createQueue)
-            connection.queue(mQueueName, {autoDelete: false, durable: true}, function () {
-                //insert queue
-                connection.publish(mQueueName, message);
+        connection.publish(mQueueName, message);
 
-                //success
-                response.contentType('application/json');
-                response.send({result: "SUCCESS"});
-            });
-        });
+        //success
+        response.contentType('application/json');
+        response.send({result: "SUCCESS"});
     }
     //Content-Type error
     else {
@@ -46,12 +50,9 @@ var singleClickQuery = function (action, queueName, request, response) {
 
 //send card info without photo to queue
 var textOnlyNewCardQuery = function (request, response) {
-
     //is_public field error detection
     if (request.body.is_public === 'true' || request.body.is_public === 'false') {
-        //rabbitMQ setting
-        var rabbit = require('amqp');
-        var connection = rabbit.createConnection({host: 'localhost'});
+        var connection = rabbitmq.getConn();
 
         //data to send
         var message = {
@@ -62,18 +63,12 @@ var textOnlyNewCardQuery = function (request, response) {
             action: 'writeNewCard_textOnly'
         };
 
-        //use rabbitMQ
-        connection.on('ready', function () {
-            //open queue (createQueue)
-            connection.queue('queue', {autoDelete: false, durable: true}, function () {
-                //insert queue
-                connection.publish('queue', message);
+        connection.publish('queue', message);
 
-                //success
-                response.contentType('application/json');
-                response.send({result: "SUCCESS"});
-            });
-        });
+        //success
+        response.contentType('application/json');
+        response.send({result: "SUCCESS"});
+
     }
     //is_public field data error occurred
     else {
