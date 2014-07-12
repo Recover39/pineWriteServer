@@ -29,12 +29,12 @@ var singleClickQuery = function (action, queueName, request, response) {
             connection.queue(mQueueName, {autoDelete: false, durable: true}, function () {
                 //insert queue
                 connection.publish(mQueueName, message);
+
+                //success
+                response.contentType('application/json');
+                response.send({result: "SUCCESS"});
             });
         });
-
-        //success
-        response.contentType('application/json');
-        response.send({result: "SUCCESS"});
     }
     //Content-Type error
     else {
@@ -68,12 +68,12 @@ var textOnlyNewCardQuery = function (request, response) {
             connection.queue('queue', {autoDelete: false, durable: true}, function () {
                 //insert queue
                 connection.publish('queue', message);
+
+                //success
+                response.contentType('application/json');
+                response.send({result: "SUCCESS"});
             });
         });
-
-        //success
-        response.contentType('application/json');
-        response.send({result: "SUCCESS"});
     }
     //is_public field data error occurred
     else {
