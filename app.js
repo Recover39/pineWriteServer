@@ -23,7 +23,9 @@ if (cluster.isMaster) {
         //make queue
         connection.on('ready', function () {
             connection.queue('queue', {autoDelete: false, durable: true}, function (queue) {
-                console.log('init queue complete');
+                console.log('\n///////////////////////////\n' +
+                    '/// init queue complete ///\n' +
+                    '///////////////////////////\n');
             });
         });
     })();
