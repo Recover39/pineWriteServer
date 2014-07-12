@@ -14,6 +14,20 @@ var numCPUs = require('os').cpus().length;
 
 //cluster 사용시작
 if (cluster.isMaster) {
+    //init queue one time
+    (function () {
+        //rabbitMQ setting
+        var rabbit = require('amqp');
+        var connection = rabbit.createConnection({host: 'localhost'});
+
+        //make queue
+        connection.on('ready', function () {
+            connection.queue('queue', {autoDelete: false, durable: true}, function (queue) {
+                console.log('init queue complete');
+            });
+        });
+    })();
+
     for (var i = 0; i < numCPUs; i++) {
         cluster.fork();
     }
