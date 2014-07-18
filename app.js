@@ -6,14 +6,7 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     cluster = require('cluster'),
-    threadFunction = require('./worker/thread'),
-    multer = require('multer'),
-    logger = require('morgan'),
-    cookieParser = require('cookie-parser'),
-    bodyParser = require('body-parser'),
-    methodOverride = require('method-override'),
-    session = require('express-session'),
-    csrf = require('csurf');
+    threadFunction = require('./worker/thread');
 
 var ports = [3000, 3001, 3002, 3003],
     servers = [];
@@ -47,27 +40,27 @@ if (cluster.isMaster) {
     var worker1 = require('./worker/queueWorker'),
         worker2 = require('./worker/queueWorker');
 
-    // express 객체 생성
     ports.forEach(function (port) {
+        console.log(port);
+        // express 객체 생성
         var app = express(),
             server = http.createServer(app);
 
         // express 환경 설정
-        app.set('port', process.env.PORT || 3000);
+        app.set('port', process.env.PORT || port);
         app.set('views', path.join(__dirname, 'views'));
         app.set('view engine', 'jade');
         app.set('view option', { layout: false });
-        app.use(logger('dev'));
-        app.use(bodyParser.json());
-        app.use(bodyParser.urlencoded({extended: true}));
-        app.use(cookieParser('pine_write'));
-        //image processing
-        app.use(multer({ dest: 'images'}));
+        app.use(express.logger('dev'));
+        app.use(express.json());
+        app.use(express.urlencoded());
+        app.use(express.bodyParser());
+        app.use(express.cookieParser('secretKey'));
         app.use(express.static(path.join(__dirname, 'public')), {maxAge: 30 * 24 * 60 * 60 * 1000});
-        app.use(methodOverride());
-        //app.use(compression());
+        app.use(express.methodOverride());
+        app.use(express.compress());
         //csrf 방어
-        app.use(csrf());
+        //app.use(require('csurf')());
 
         app.use(app.router);
 
@@ -96,14 +89,13 @@ if (cluster.isMaster) {
         app.post('/threads/:thread_id/unlike', threadFunction.unlikeCard);
         app.post('/threads/:thread_id/report', threadFunction.reportCard);
 
-        server.listen(port, function () {
+        server.listen(app.get('port'), function () {
             console.log('\n//////////////////////////////////////////////////\n' +
-                '//// pine_write Server listening on port ' + port + ' ////' +
+                '//// pine_write Server listening on port ' + app.get('port') + ' ////' +
                 '\n//////////////////////////////////////////////////');
         });
-
-        servers.push(server);
     });
+
 
     //worker 작동 시작
     //worker1();
