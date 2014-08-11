@@ -18,7 +18,7 @@ var rabbitmq = (function () {
 })();
 
 //send singleClickQuery to queue
-var singleClickQuery = function (action, queueName, request, response) {
+var singleThreadQuery = function (action, queueName, request, response) {
     var reqContentType = request.get('Content-Type');
 
     if (reqContentType === 'application/json') {
@@ -32,7 +32,7 @@ var singleClickQuery = function (action, queueName, request, response) {
         var message = {
             thread_id: request.params.thread_id,
             user: request.body.user,
-            time: new Date(),
+            time: new Date().getTime(),
             action: mQueryAction
         };
 
@@ -50,6 +50,104 @@ var singleClickQuery = function (action, queueName, request, response) {
     }
 };
 
+var singleCommentQuery = function (action, queueName, request, response) {
+    var reqContentType = request.get('Content-Type');
+
+    if (reqContentType === 'application/json') {
+        var connection = rabbitmq.getConn();
+
+        //set queue name, action name (identifier)
+        var mQueryAction = String(action),
+            mQueueName = String(queueName);
+
+        //data to send
+        var message = {
+            comment_id: request.params.comment_id,
+            user: request.body.user,
+            time: new Date().getTime(),
+            action: mQueryAction
+        };
+
+        connection.publish(mQueueName, message);
+
+        //success
+        response.contentType('application/json');
+        response.send({result: "SUCCESS"});
+    }
+    //Content-Type error
+    else {
+        //fail
+        response.contentType('application/json');
+        response.send({result: "FAIL", message: 'error message'});
+    }
+
+};
+
+exports.likeThread = function (req, res) {
+    singleThreadQuery('threadLike', 'requestQueue', req, res);
+};
+
+exports.unlikeThread = function (req, res) {
+    singleThreadQuery('threadUnlike', 'requestQueue', req, res);
+};
+
+exports.reportThread = function (req, res) {
+    singleThreadQuery('threadReport', 'requestQueue', req, res);
+};
+
+exports.blockThread = function (req, res) {
+    singleThreadQuery('threadBlock', 'requestQueue', req, res);
+};
+
+exports.addComment = function (req, res) {
+    var reqContentType = req.get('Content-Type');
+
+    if (reqContentType === 'application/json') {
+        var connection = rabbitmq.getConn();
+
+        //set queue name, action name (identifier)
+        var mQueryAction = 'commentAdd',
+            mQueueName = 'requestQueue';
+
+        //data to send
+        var message = {
+            comment_id: req.params.comment_id,
+            user: req.body.user,
+            content: req.body.content,
+            time: new Date().getTime(),
+            action: mQueryAction
+        };
+
+        connection.publish(mQueueName, message);
+
+        //success
+        res.contentType('application/json');
+        res.send({result: "SUCCESS"});
+    }
+    //Content-Type error
+    else {
+        //fail
+        res.contentType('application/json');
+        res.send({result: "FAIL", message: 'error message'});
+    }
+};
+
+exports.likeComment = function (req, res) {
+    singleCommentQuery('commentLike', 'requestQueue', req, res);
+};
+
+exports.unlikeComment = function (req, res) {
+    singleCommentQuery('commentUnlike', 'requestQueue', req, res);
+};
+
+exports.blockComment = function (req, res) {
+    singleCommentQuery('commentBlock', 'requestQueue', req, res);
+};
+
+exports.reportComment = function (req, res) {
+    singleCommentQuery('commentReport', 'requestQueue', req, res);
+};
+
 //send card info without photo to queue
 var textOnlyNewCardQuery = function (request, response) {
     //is_public field error detection
@@ -61,7 +159,7 @@ var textOnlyNewCardQuery = function (request, response) {
             author: request.body.author,
             is_public: request.body.is_public,
             content: request.body.content,
-            time: new Date(),
+            time: new Date().getTime(),
             action: 'writeNewCard_textOnly'
         };
 
@@ -138,16 +236,4 @@ exports.postNewCard = function (req, res) {
         res.contentType('application/json');
         res.send({result: "FAIL", message: 'error message'});
     }
-};
-
-exports.likeCard = function (req, res) {
-    singleClickQuery('like', 'queue', req, res);
-};
-
-exports.unlikeCard = function (req, res) {
-    singleClickQuery('unlike', 'queue', req, res);
-};
-
-exports.reportCard = function (req, res) {
-    singleClickQuery('report', 'queue', req, res);
 };
