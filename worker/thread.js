@@ -17,6 +17,8 @@ var rabbitmq = (function () {
     };
 })();
 
+var serviceQueueName = 'requestQueue';
+
 //send singleClickQuery to queue
 var singleThreadQuery = function (action, queueName, request, response) {
     var reqContentType = request.get('Content-Type');
@@ -84,19 +86,19 @@ var singleCommentQuery = function (action, queueName, request, response) {
 };
 
 exports.likeThread = function (req, res) {
-    singleThreadQuery('threadLike', 'requestQueue', req, res);
+    singleThreadQuery('threadLike', serviceQueueName, req, res);
 };
 
 exports.unlikeThread = function (req, res) {
-    singleThreadQuery('threadUnlike', 'requestQueue', req, res);
+    singleThreadQuery('threadUnlike', serviceQueueName, req, res);
 };
 
 exports.reportThread = function (req, res) {
-    singleThreadQuery('threadReport', 'requestQueue', req, res);
+    singleThreadQuery('threadReport', serviceQueueName, req, res);
 };
 
 exports.blockThread = function (req, res) {
-    singleThreadQuery('threadBlock', 'requestQueue', req, res);
+    singleThreadQuery('threadBlock', serviceQueueName, req, res);
 };
 
 exports.addComment = function (req, res) {
@@ -107,7 +109,7 @@ exports.addComment = function (req, res) {
 
         //set queue name, action name (identifier)
         var mQueryAction = 'commentAdd',
-            mQueueName = 'requestQueue';
+            mQueueName = serviceQueueName;
 
         //data to send
         var message = {
@@ -133,19 +135,19 @@ exports.addComment = function (req, res) {
 };
 
 exports.likeComment = function (req, res) {
-    singleCommentQuery('commentLike', 'requestQueue', req, res);
+    singleCommentQuery('commentLike', serviceQueueName, req, res);
 };
 
 exports.unlikeComment = function (req, res) {
-    singleCommentQuery('commentUnlike', 'requestQueue', req, res);
+    singleCommentQuery('commentUnlike', serviceQueueName, req, res);
 };
 
 exports.blockComment = function (req, res) {
-    singleCommentQuery('commentBlock', 'requestQueue', req, res);
+    singleCommentQuery('commentBlock', serviceQueueName, req, res);
 };
 
 exports.reportComment = function (req, res) {
-    singleCommentQuery('commentReport', 'requestQueue', req, res);
+    singleCommentQuery('commentReport', serviceQueueName, req, res);
 };
 
 //send card info without photo to queue 
@@ -163,7 +165,7 @@ var textOnlyNewCardQuery = function (request, response) {
             action: 'newThread_textOnly'
         };
 
-        connection.publish('queue', message);
+        connection.publish(serviceQueueName, message);
 
         //success
         response.contentType('application/json');
