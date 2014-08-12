@@ -27,7 +27,7 @@ if (cluster.isMaster) {
         //create rabbitMQ connection
         var rabbit = require('amqp'),
             connection = rabbit.createConnection({
-                host: 'localhost', port: 5671,
+                host: 'localhost', port: 5672,
                 login: 'admin', password: 'password',
                 authMechanism: 'AMQPLAIN'
 //                , vhost: '/'
@@ -43,11 +43,11 @@ if (cluster.isMaster) {
             // declare queue
             var requestQueueList = ['requestQueue'];
 
-            requestQueueList.forEach(function (queue) {
-                connection.queue(queue, {autoDelete: false, durable: true}, function (queue) {
-                    console.log('\n///////////////////////////\n' +
-                        '/// init ' + queue + ' complete ///\n' +
-                        '///////////////////////////\n');
+            requestQueueList.forEach(function (queueName) {
+                connection.queue(queueName, {autoDelete: false, durable: true}, function (queue) {
+                    console.log('\n///////////////////////////////////\n' +
+                        '//////' + queueName + ' init complete ///\n' +
+                        '////////////////////////////////////\n');
                 });
             });
         });

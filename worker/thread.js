@@ -148,7 +148,7 @@ exports.reportComment = function (req, res) {
     singleCommentQuery('commentReport', 'requestQueue', req, res);
 };
 
-//send card info without photo to queue
+//send card info without photo to queue 
 var textOnlyNewCardQuery = function (request, response) {
     //is_public field error detection
     if (request.body.is_public === 'true' || request.body.is_public === 'false') {
@@ -160,7 +160,7 @@ var textOnlyNewCardQuery = function (request, response) {
             is_public: request.body.is_public,
             content: request.body.content,
             time: new Date().getTime(),
-            action: 'writeNewCard_textOnly'
+            action: 'newThread_textOnly'
         };
 
         connection.publish('queue', message);
@@ -168,7 +168,6 @@ var textOnlyNewCardQuery = function (request, response) {
         //success
         response.contentType('application/json');
         response.send({result: "SUCCESS"});
-
     }
     //is_public field data error occurred
     else {
@@ -178,11 +177,8 @@ var textOnlyNewCardQuery = function (request, response) {
     }
 };
 
-//send card info with card to queue -> not handle this at rabbitmq
+//send card info with photo to queue 
 var newCardQuery = function (request, response) {
-    //rabbitMQ setting
-    var rabbit = require('amqp');
-    var connection = rabbit.createConnection({host: 'localhost'});
 
     //is_public 에러 감지
     //if (request.body.is_public === 'true' || request.body.is_public === 'false') {
@@ -191,7 +187,7 @@ var newCardQuery = function (request, response) {
         is_public: request.body.is_public,
         content: request.body.content,
         time: new Date(),
-        action: 'writeNewCard'
+        action: 'newThread'
     };
 
     //use rabbitMQ
@@ -217,18 +213,11 @@ var newCardQuery = function (request, response) {
 exports.postNewCard = function (req, res) {
     var reqContentType = req.get('Content-Type');
 
-    //console.log(req.get('Content-Type'));
-
     if (reqContentType === 'application/json') {
         textOnlyNewCardQuery(req, res);
     }
     else if (/multipart\/form-data;+/.test(reqContentType)) {
-//        console.log('hello');
-//        console.log(req.body);
-//        console.log(req.files);
-//        console.log(req.files.file.name);
-//        console.log("file path", req.files.file.path);
-//        newCardQuery(req, res);
+
     }
     //Content-Type error
     else {
