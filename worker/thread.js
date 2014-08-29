@@ -3,6 +3,7 @@
  */
 
 'use strict';
+
 var rabbitmq = (function () {
     //rabbitMQ setting
     var rabbit = require('amqp');
@@ -98,7 +99,7 @@ exports.reportThread = function (req, res) {
 };
 
 exports.blockThread = function (req, res) {
-    singleThreadQuery('threadBlock', serviceQueueName, req, res);
+    singleThreadQuery('threadHide', serviceQueueName, req, res);
 };
 
 exports.addComment = function (req, res) {
@@ -113,10 +114,10 @@ exports.addComment = function (req, res) {
 
         //data to send
         var message = {
-            comment_id: req.params.comment_id,
-            user: req.body.user,
+            thread_id: req.params.thread_id.toString(),
+            author: req.body.user,
             content: req.body.content,
-            time: new Date().getTime(),
+            pub_date: new Date().getTime(),
             action: mQueryAction
         };
 
@@ -142,9 +143,9 @@ exports.unlikeComment = function (req, res) {
     singleCommentQuery('commentUnlike', serviceQueueName, req, res);
 };
 
-exports.blockComment = function (req, res) {
-    singleCommentQuery('commentBlock', serviceQueueName, req, res);
-};
+// exports.blockComment = function (req, res) {
+//     singleCommentQuery('commentBlock', serviceQueueName, req, res);
+// };
 
 exports.reportComment = function (req, res) {
     singleCommentQuery('commentReport', serviceQueueName, req, res);
@@ -161,7 +162,7 @@ var textOnlyNewCardQuery = function (request, response) {
             author: request.body.author,
             is_public: request.body.is_public,
             content: request.body.content,
-            time: new Date().getTime(),
+            pub_date: new Date().getTime(),
             action: 'newThread_textOnly'
         };
 
