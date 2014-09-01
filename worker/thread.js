@@ -4,24 +4,12 @@
 
 'use strict';
 
-var rabbitmq = (function () {
-    //rabbitMQ setting
-    var rabbit = require('amqp');
-    var connection = rabbit.createConnection({host: 'localhost'});
-
-    var getConn = function () {
-        return connection;
-    };
-
-    return {
-        getConn: getConn
-    };
-})();
+var rabbitmq = require('./rabbitmqConfig');
 
 var serviceQueueName = 'requestQueue';
 
 //send singleClickQuery to queue
-var singleThreadQuery = function (action, queueName, request, response) {
+var simpleThreadRequest = function (action, queueName, request, response) {
     var reqContentType = request.get('Content-Type');
 
     if (reqContentType === 'application/json') {
@@ -53,7 +41,7 @@ var singleThreadQuery = function (action, queueName, request, response) {
     }
 };
 
-var singleCommentQuery = function (action, queueName, request, response) {
+var simpleCommentRequest = function (action, queueName, request, response) {
     var reqContentType = request.get('Content-Type');
 
     if (reqContentType === 'application/json') {
@@ -87,19 +75,19 @@ var singleCommentQuery = function (action, queueName, request, response) {
 };
 
 exports.likeThread = function (req, res) {
-    singleThreadQuery('threadLike', serviceQueueName, req, res);
+    simpleThreadRequest('threadLike', serviceQueueName, req, res);
 };
 
 exports.unlikeThread = function (req, res) {
-    singleThreadQuery('threadUnlike', serviceQueueName, req, res);
+    simpleThreadRequest('threadUnlike', serviceQueueName, req, res);
 };
 
 exports.reportThread = function (req, res) {
-    singleThreadQuery('threadReport', serviceQueueName, req, res);
+    simpleThreadRequest('threadReport', serviceQueueName, req, res);
 };
 
 exports.blockThread = function (req, res) {
-    singleThreadQuery('threadHide', serviceQueueName, req, res);
+    simpleThreadRequest('threadHide', serviceQueueName, req, res);
 };
 
 exports.addComment = function (req, res) {
@@ -136,19 +124,19 @@ exports.addComment = function (req, res) {
 };
 
 exports.likeComment = function (req, res) {
-    singleCommentQuery('commentLike', serviceQueueName, req, res);
+    simpleCommentRequest('commentLike', serviceQueueName, req, res);
 };
 
 exports.unlikeComment = function (req, res) {
-    singleCommentQuery('commentUnlike', serviceQueueName, req, res);
+    simpleCommentRequest('commentUnlike', serviceQueueName, req, res);
 };
 
-// exports.blockComment = function (req, res) {
-//     singleCommentQuery('commentBlock', serviceQueueName, req, res);
-// };
+exports.blockComment = function (req, res) {
+    simpleCommentRequest('commentBlock', serviceQueueName, req, res);
+};
 
 exports.reportComment = function (req, res) {
-    singleCommentQuery('commentReport', serviceQueueName, req, res);
+    simpleCommentRequest('commentReport', serviceQueueName, req, res);
 };
 
 //send card info without photo to queue 

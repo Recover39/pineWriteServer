@@ -1,7 +1,11 @@
 /**
  * Created by YoungKim on 2014. 8. 11..
  */
-var threadFunction = require('../worker/thread');
+
+'use strict';
+
+var threadFunction = require('../worker/thread'),
+    userFunction = require('../worker/user');
 
 exports.route = function (app) {
 
@@ -9,6 +13,10 @@ exports.route = function (app) {
     app.get('/', function (req, res) {
         res.render('test');
     });
+
+    app.post('/friends/create', userFunction.addFriend);
+    app.post('/friends/destroy', userFunction.deleteFriend);
+
 
     //request relation with thread (card)
     app.post('/threads', threadFunction.postNewCard);
@@ -22,5 +30,5 @@ exports.route = function (app) {
     app.post('/comments/:comment_id/like', threadFunction.likeComment);
     app.post('/comments/:comment_id/unlike', threadFunction.unlikeComment);
     app.post('/comments/:comment_id/report', threadFunction.reportComment);
-    app.post('/comments/:comment_id/block', threadFunction.blockComment);
+    //app.post('/comments/:comment_id/block', threadFunction.blockComment);
 };
