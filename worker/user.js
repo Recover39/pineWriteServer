@@ -5,6 +5,7 @@
 'use strict';
 
 var rabbitmq = require('./rabbitmqConfig');
+
 var serviceQueueName = 'requestQueue';
 
 exports.addFriend = function (req, res) {

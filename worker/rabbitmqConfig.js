@@ -5,7 +5,9 @@
 'use strict';
 
 var connectionConfig = {
-    host: 'localhost'
+    host: 'localhost', port: 5672,
+    login: 'admin', password: 'password',
+    authMechanism: 'AMQPLAIN'
 };
 
 var rabbitmq = (function () {
@@ -22,4 +24,4 @@ var rabbitmq = (function () {
     };
 })();
 
-module.export = rabbitmq;
+module.exports = rabbitmq;

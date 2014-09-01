@@ -25,18 +25,7 @@ if (cluster.isMaster) {
     //init queue one time
     (function () {
         //create rabbitMQ connection
-        var rabbit = require('amqp'),
-            connection = rabbit.createConnection({
-                host: 'localhost', port: 5672,
-                login: 'admin', password: 'password',
-                authMechanism: 'AMQPLAIN'
-//                , vhost: '/'
-//                , ssl: { enabled : true
-//                    , keyFile : '/path/to/key/file'
-//                    , certFile : '/path/to/cert/file'
-//                    , caFile : '/path/to/cacert/file'
-//                    , rejectUnauthorized : true
-            });
+        var connection = require('./worker/rabbitmqConfig').getConn();
 
         //make queue
         connection.on('ready', function () {
